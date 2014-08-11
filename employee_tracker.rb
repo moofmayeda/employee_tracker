@@ -16,11 +16,10 @@ def welcome
     puts "1) Create a new employee"
     puts "2) Create a new division"
     puts "3) View all employees in a division"
-    puts "4) Projects menu"
-    puts "6) View an employee's details"
-    puts "7) View a project's details"
-    puts "8) View a division's projects"
-    puts "9) View an employee's assigned projects on a specific day"
+    puts "4) View an employee's details"
+    puts "5) View a division's projects"
+    puts "6) View an employee's assigned projects on a specific day"
+    puts "7) Projects menu"
     puts "10) Exit"
     choice = gets.chomp.to_i
     case choice
@@ -31,17 +30,13 @@ def welcome
     when 3
       view_employees
     when 4
-      projects_menu
-    when 5
-
-    when 6
       view_employee_projects
-    when 7
-      view_project_employees
-    when 8
+    when 5
       view_division_projects
-    when 9
+    when 6
       search_by_date
+    when 7
+      projects_menu
     else
       puts "Enter a valid option"
     end
@@ -120,6 +115,7 @@ def view_project_employees
   view_projects
   puts "Enter the project number"
   selected_project = Project.find(gets.chomp.to_i)
+  puts "START DATE: " + selected_project.start_date.to_s + "\tEND DATE: " + selected_project.end_date.to_s
   puts "EMPLOYEES:"
   selected_project.assignments.each do |assignment|
     puts assignment.employee.name + " (" + assignment.employee.division.name + ")\tROLE:" + assignment.description
@@ -149,7 +145,8 @@ def projects_menu
   puts "2) Assign a project to an employee"
   puts "3) Update dates for a project"
   puts "4) Remove an employee from a project"
-  puts "5) Return to the main menu"
+  puts "5) View a project's details"
+  puts "6) Return to the main menu"
   case gets.chomp.to_i
   when 1
     new_project
@@ -160,6 +157,8 @@ def projects_menu
   when 4
     remove_employee_from_project
   when 5
+    view_project_employees
+  when 6
     welcome
   else
     puts "Enter a valid option"
