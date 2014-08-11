@@ -3,6 +3,7 @@ require 'active_record'
 require './lib/employee'
 require './lib/division'
 require './lib/project'
+require './lib/assignment'
 
 database_configurations = YAML::load(File.open('./db/config.yml'))
 development_configuration = database_configurations['development']
@@ -17,8 +18,9 @@ def welcome
     puts "3) View all employees in a division"
     puts "4) Create a new project"
     puts "5) Assign a project to an employee"
-    puts "6) View an employee's projects"
-    puts "7) View a project's employees"
+    puts "6) View an employee's details"
+    puts "7) View a project's details"
+    puts "8) View a division's projects"
     puts "10) Exit"
     choice = gets.chomp.to_i
     case choice
@@ -36,6 +38,8 @@ def welcome
       view_employee_projects
     when 7
       view_project_employees
+    when 8
+      view_division_projects
     else
       puts "Enter a valid option"
     end
@@ -92,21 +96,36 @@ def assign_project
   selected_project = Project.find(gets.chomp.to_i)
   puts "Enter the name of the employee"
   selected_employee = Employee.where({:name => gets.chomp.upcase}).first
-  selected_project.employees << selected_employee
+  puts "Enter the employee's contribution"
+  selected_employee.assignments.create({:project_id => selected_project.id, :description => gets.chomp.upcase})
 end
 
 def view_employee_projects
   puts "Enter the name of the employee"
   selected_employee = Employee.where({:name => gets.chomp.upcase}).first
-  selected_employee.projects.each {|project| puts project.name}
+  puts selected_employee.name + "\tDIVISION: " + selected_employee.division.name
+  puts "PROJECTS:"
+  selected_employee.assignments.each do |assignment|
+    puts assignment.project.name + ": " + assignment.description
+  end
 end
 
 def view_project_employees
   view_projects
   puts "Enter the project number"
   selected_project = Project.find(gets.chomp.to_i)
-  puts "EMPLOYEES"
-  selected_project.employees.each {|employee| puts employee.name + employee.division}
+  puts "EMPLOYEES:"
+  selected_project.assignments.each do |assignment|
+    puts assignment.employee.name + " (" + assignment.employee.division.name + ")\tROLE:" + assignment.description
+  end
+end
+
+def view_division_projects
+  view_divisions
+  puts "Enter the division number to view projects"
+  selected_division = Division.find(gets.chomp.to_i)
+  puts "PROJECTS:"
+  selected_division.projects.each {|project| puts project.name}
 end
 
 welcome
