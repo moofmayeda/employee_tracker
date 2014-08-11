@@ -16,8 +16,7 @@ def welcome
     puts "1) Create a new employee"
     puts "2) Create a new division"
     puts "3) View all employees in a division"
-    puts "4) Create a new project"
-    puts "5) Assign a project to an employee"
+    puts "4) Projects menu"
     puts "6) View an employee's details"
     puts "7) View a project's details"
     puts "8) View a division's projects"
@@ -32,9 +31,9 @@ def welcome
     when 3
       view_employees
     when 4
-      new_project
+      projects_menu
     when 5
-      assign_project
+
     when 6
       view_employee_projects
     when 7
@@ -143,6 +142,49 @@ def search_by_date
   selected_employee.search_by_date(date).each do |project|
     puts project.name + "\tSTART: " + project.start_date.to_s + "\tEND: " + project.end_date.to_s
   end
+end
+
+def projects_menu
+  puts "1) Create a new project"
+  puts "2) Assign a project to an employee"
+  puts "3) Update dates for a project"
+  puts "4) Remove an employee from a project"
+  puts "5) Return to the main menu"
+  case gets.chomp.to_i
+  when 1
+    new_project
+  when 2
+    assign_project
+  when 3
+    update_dates
+  when 4
+    remove_employee_from_project
+  when 5
+    welcome
+  else
+    puts "Enter a valid option"
+  end
+  projects_menu
+end
+
+def update_dates
+  view_projects
+  puts "Enter the project number"
+  selected_project = Project.find(gets.chomp.to_i)
+  puts "Enter new start date (YYYY-MM-DD)"
+  selected_project.update(:start_date => gets.chomp)
+  puts "Enter new end date (YYYY-MM-DD)"
+  selected_project.update(:end_date => gets.chomp)
+  puts "Successfully updated!"
+end
+
+def remove_employee_from_project
+  view_projects
+  puts "Enter the project number"
+  project_id = gets.chomp.to_i
+  puts "Enter the name of the employee"
+  selected_employee = Employee.where({:name => gets.chomp.upcase}).first
+  Assignment.where(:project_id => project_id, :employee_id => selected_employee.id).destroy_all
 end
 
 welcome
