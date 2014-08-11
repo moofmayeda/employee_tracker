@@ -21,6 +21,7 @@ def welcome
     puts "6) View an employee's details"
     puts "7) View a project's details"
     puts "8) View a division's projects"
+    puts "9) View an employee's assigned projects on a specific day"
     puts "10) Exit"
     choice = gets.chomp.to_i
     case choice
@@ -40,6 +41,8 @@ def welcome
       view_project_employees
     when 8
       view_division_projects
+    when 9
+      search_by_date
     else
       puts "Enter a valid option"
     end
@@ -80,8 +83,12 @@ end
 
 def new_project
   puts "Enter the new project name"
-  new_project = Project.new({:name => gets.chomp.upcase})
-  new_project.save
+  name = gets.chomp.upcase
+  puts "Enter the start date (YYYY-MM-DD)"
+  start_date = gets.chomp
+  puts "Enter the end date (YYYY-MM-DD)"
+  end_date = gets.chomp
+  new_project = Project.create({:name => name, :start_date => start_date, :end_date => end_date})
   puts "Successfully added!"
 end
 
@@ -126,6 +133,16 @@ def view_division_projects
   selected_division = Division.find(gets.chomp.to_i)
   puts "PROJECTS:"
   selected_division.projects.each {|project| puts project.name}
+end
+
+def search_by_date
+  puts "Enter the name of the employee"
+  selected_employee = Employee.where({:name => gets.chomp.upcase}).first
+  puts "Enter the date (YYYY-MM-DD)"
+  date = gets.chomp
+  selected_employee.search_by_date(date).each do |project|
+    puts project.name + "\tSTART: " + project.start_date.to_s + "\tEND: " + project.end_date.to_s
+  end
 end
 
 welcome
